@@ -60,8 +60,70 @@ int main (int argc, char** argv){
         return -1;
     }
 
+    geometry_msgs::PoseStamped geo_pose_uwb_position_prev;
     
+    while(ros::ok()){
+
+        ros::spinOnce();
+
+        geometry_msgs::PoseStamped geo_pose_uwb_position;
+
+        if(ser.available()){
+            
+            std_msgs::String result;
+            
+            result.data = ser.read(ser.available());
+            
+            // from std_msgs::String to geometry_msgs::PoseStamped
+            //std::cout << result.data << std::endl;
+
+            int i_init_loc = 0;
+            // Find X value
+            std::string str_first_seperator  = ":";
+            std::string str_second_seperator = ",";
+
+            int i_first_idx  = result.data.find(str_first_seperator, i_init_loc) + 1;
+            int i_second_idx = result.data.find(str_second_seperator, i_init_loc) ;
+            int i_length     = i_second_idx - i_first_idx;
+            float i_x_value    = stof(result.data.substr( i_first_idx , i_length ))/1000;
+            i_init_loc = i_second_idx+1;  // add 1 for find next seperation point.
+            // Find Y value
+            i_first_idx  = result.data.find(str_first_seperator, i_init_loc) + 1;
+            i_second_idx = result.data.find(str_second_seperator, i_init_loc) ;
+            i_length     = i_second_idx - i_first_idx;
+            float i_y_value    = stof(result.data.substr( i_first_idx , i_length ))/1000;
+            i_init_loc = i_second_idx+1;  // add 1 for find next seperation point.
+            // Find Z value
+            str_second_seperator = "\n";
+            i_first_idx  = result.data.find(str_first_seperator, i_init_loc) + 1;
+            i_second_idx = result.data.find(str_second_seperator, i_init_loc) ;
+            i_length     = i_second_idx - i_first_idx;
+            float i_z_value    = stof(result.data.substr( i_first_idx , i_length ))/1000;
+            //std::cout << "X: " << i_x_value << " Y:  " << i_y_value << " Z: " << i_z_value << std::endl;
+
+            // Send to Mavros
+            geo_pose_uwb_position.pose.position.x = i_x_value;
+            geo_pose_uwb_position.pose.position.y = i_y_value;
+            geo_pose_uwb_position.pose.position.z = i_z_value;
+
+            geo_pose_uwb_position_prev.pose.position.x = i_x_value;
+            geo_pose_uwb_position_prev.pose.position.y = i_y_value;
+            geo_pose_uwb_position_prev.pose.position.z = i_z_value;
+        }
+        else
+        {
+            geo_pose_uwb_position.pose.position.x = geo_pose_uwb_position_prev.pose.position.x;
+            geo_pose_uwb_position.pose.position.y = geo_pose_uwb_position_prev.pose.position.y;
+            geo_pose_uwb_position.pose.position.z = geo_pose_uwb_position_prev.pose.position.z;            
+        }
+
+        // Publish PoseStamped data to mavros.
+        ros_pub_uwb_position.publish(geo_pose_uwb_position);
+        loop_rate.sleep();
+
+    }
     
+    /* 
     while(ros::ok()){
 
         ros::spinOnce();
@@ -110,6 +172,6 @@ int main (int argc, char** argv){
         }
         loop_rate.sleep();
 
-    }
+    } */
 }
 
