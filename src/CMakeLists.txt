@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(serial_example)
+project(uwb_loc)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp

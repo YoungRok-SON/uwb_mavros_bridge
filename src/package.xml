@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package>
-  <name>serial_example</name>
+  <name>uwb_loc</name>
   <version>0.0.0</version>
   <description>Example package for using http://wjwwood.io/serial/ library</description>
 
-  <author email="garyservin@gmail.com">Gary Servin</author>
+  <author email="dudfhr3349@gmail.com">YoungRok Son</author>
 
-  <maintainer email="garyservin@gmail.com">Gary Servin</maintainer>
+  <maintainer email="dudfhr3349@gmail.com">YoungRok Son</maintainer>
 
   <license>BSD</license>
 
